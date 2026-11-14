@@ -1,5 +1,5 @@
-import axios from 'axios'
 import type { User } from '@/types'
+import api from './axios'
 
 export const profileService = {
   async updateProfile(payload: {
@@ -8,7 +8,7 @@ export const profileService = {
     lastName?: string
     phoneNumber?: string
   }): Promise<User> {
-    const { data } = await axios.patch<User>('/api/user', {
+    const { data } = await api.patch<User>('/api/user', {
       first_name: payload.firstName,
       last_name: payload.lastName,
       middle_name: payload.middleName,
@@ -23,7 +23,7 @@ export const profileService = {
     password: string
     passwordConfirmation: string
   }): Promise<void> {
-    await axios.put<void>(`/api/user/password`, {
+    await api.put<void>(`/api/user/password`, {
       current_password: payload.currentPassword,
       password: payload.password,
       password_confirmation: payload.passwordConfirmation,

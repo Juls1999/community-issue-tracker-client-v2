@@ -1,9 +1,9 @@
 import type { NotificationResponse } from '@/types/notification'
-import axios from 'axios'
+import api from './axios'
 
 export const notificationService = {
   async getNotifications(page = 1): Promise<NotificationResponse> {
-    const { data } = await axios.get('/api/notifications', {
+    const { data } = await api.get('/api/notifications', {
       params: { page },
     })
 
@@ -11,18 +11,18 @@ export const notificationService = {
   },
 
   async markAsRead(notificationId: string): Promise<void> {
-    await axios.patch(`/api/notifications/${notificationId}/read`)
+    await api.patch(`/api/notifications/${notificationId}/read`)
   },
 
   async markAllAsRead(): Promise<void> {
-    await axios.patch('/api/notifications/read-all')
+    await api.patch('/api/notifications/read-all')
   },
 
   async deleteNotification(notificationId: string): Promise<void> {
-    await axios.delete(`/api/notifications/${notificationId}`)
+    await api.delete(`/api/notifications/${notificationId}`)
   },
 
   async deleteReadNotifications(): Promise<void> {
-    await axios.delete('/api/notifications/read')
+    await api.delete('/api/notifications/read')
   },
 }

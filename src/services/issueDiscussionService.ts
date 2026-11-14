@@ -1,21 +1,22 @@
 import type { IssueComment } from '@/types'
+import api from './axios'
 import axios from 'axios'
 
 export const issueDiscussionService = {
   async getComments(issueUuid: string): Promise<IssueComment[]> {
-    const { data } = await axios.get<{ data: IssueComment[] }>(`/api/issues/${issueUuid}/comments`)
+    const { data } = await api.get<{ data: IssueComment[] }>(`/api/issues/${issueUuid}/comments`)
 
     return data.data
   },
 
   async addComment(issueUuid: string, body: string) {
-    const response = await axios.post(`/api/issues/${issueUuid}/comments`, { body })
+    const response = await api.post(`/api/issues/${issueUuid}/comments`, { body })
 
     return response.data
   },
 
   async getAttachments(issueUuid: string) {
-    const response = await axios.get(`/api/issues/${issueUuid}/attachments`)
+    const response = await api.get(`/api/issues/${issueUuid}/attachments`)
 
     return response.data
   },
@@ -27,7 +28,7 @@ export const issueDiscussionService = {
       formData.append('images[]', file)
     })
 
-    return axios.post(`/api/issues/${issueUuid}/attachments`, formData)
+    return api.post(`/api/issues/${issueUuid}/attachments`, formData)
   },
 
   getDownloadUrl(issueUuid: string, attachmentId: number) {

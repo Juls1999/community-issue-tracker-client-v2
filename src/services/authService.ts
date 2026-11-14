@@ -1,58 +1,47 @@
 import type { LoginParams, RegisterParams, User } from '@/types'
-import axios from 'axios'
+import api from './axios'
+interface LoginResponse {
+  user: User
+  token: string
+  token_type: string
+}
 
 export const authService = {
   async getAuthenticatedUser(): Promise<User> {
-    const { data } = await axios.get<User>('/api/user')
-    return data
+    const { data } = await api.get<{ data: User }>('/api/user')
+    return data.data
   },
 
-  async registerUser(credentials: RegisterParams): Promise<void> {
-    await axios.get('/sanctum/csrf-cookie')
-    await axios.post<void>('/register', {
+  async registerUser(credentials: RegisterParams): Promise<User> {
+    const { data } = await api.post<LoginResponse>('/api/register', {
       first_name: credentials.firstName,
       middle_name: credentials.middleName,
       last_name: credentials.lastName,
       phone_number: credentials.phoneNumber,
-      email: credentials.email,
       barangay_id: credentials.barangayId,
+      email: credentials.email,
       password: credentials.password,
       password_confirmation: credentials.passwordConfirmation,
     })
+
+    localStorage.setItem('access_token', data.token)
+
+    return data.user
   },
 
-  async loginUser(credentials: LoginParams): Promise<void> {
-    await axios.get('/sanctum/csrf-cookie')
-    await axios.post<void>('/login', credentials)
+  async loginUser(credentials: LoginParams): Promise<User> {
+    const { data } = await api.post<LoginResponse>('/api/login', credentials)
+
+    localStorage.setItem('access_token', data.token)
+
+    return data.user
   },
 
   async logoutUser(): Promise<void> {
-    await axios.post<void>('/logout')
+    try {
+      await api.post('/api/logout')
+    } finally {
+      localStorage.removeItem('access_token')
+    }
   },
 }
-
-// export const getAuthenticatedUser = async (): Promise<User> => {
-//   const { data } = await axios.get<User>('/api/user')
-//   return data
-// }
-
-// export const registerUser = async (credentials: RegisterParams): Promise<void> => {
-//   await axios.post<void>('/register', {
-//     first_name: credentials.firstName,
-//     middle_name: credentials.middleName,
-//     last_name: credentials.lastName,
-//     phone_number: credentials.phoneNumber,
-//     email: credentials.email,
-//     barangay_id: credentials.barangayId,
-//     password: credentials.password,
-//     password_confirmation: credentials.passwordConfirmation,
-//   })
-// }
-
-// export const loginUser = async (credentials: LoginParams): Promise<void> => {
-//   await axios.post<void>('/login', credentials)
-// }
-
-// export const logoutUser = async (): Promise<void> => {
-//   await axios.post<void>('/logout')
-// }

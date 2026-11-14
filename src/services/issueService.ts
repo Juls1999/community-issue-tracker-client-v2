@@ -12,13 +12,13 @@ import type {
   UpdateStatusPayload,
   User,
 } from '@/types'
-import axios from 'axios'
+import api from './axios'
 
 export const issueService = {
   // Fetches a paginated list of issues with optional search and status filters
 
   async getIssues(params: Partial<IssueListParams> = {}): Promise<PaginatedIssues> {
-    const response = await axios.get('/api/issues', {
+    const response = await api.get('/api/issues', {
       params,
     })
 
@@ -27,14 +27,14 @@ export const issueService = {
 
   // Fetches a single issue by its UUID
   async getIssue(uuid: string): Promise<Issue> {
-    const { data } = await axios.get<{ data: Issue }>(`/api/issues/${uuid}`)
+    const { data } = await api.get<{ data: Issue }>(`/api/issues/${uuid}`)
 
     return data.data
   },
 
   // Creates a new issue with the provided payload
   async createIssue(payload: CreateIssueTicketParams): Promise<Issue> {
-    const { data } = await axios.post<{ data: Issue }>('/api/issues', {
+    const { data } = await api.post<{ data: Issue }>('/api/issues', {
       title: payload.title,
       description: payload.description,
       issue_category_id: payload.categoryId,
@@ -49,49 +49,49 @@ export const issueService = {
 
   // Fetches a list of issue categories
   async getIssueCategories(): Promise<IssueCategory[]> {
-    const { data } = await axios.get<IssueCategory[]>('/api/issue-categories')
+    const { data } = await api.get<IssueCategory[]>('/api/issue-categories')
     return data
   },
 
   async updateIssue(uuid: string, payload: IssueUpdatePayload): Promise<void> {
-    await axios.patch<void>(`api/issues/${uuid}`, payload)
+    await api.patch<void>(`api/issues/${uuid}`, payload)
   },
 
   // async assignStaff(uuid: string, payload: AssignStaffPayload): Promise<User> {
-  //   const { data } = await axios.post(`/api/issues/${uuid}/assign`, payload)
+  //   const { data } = await api.post(`/api/issues/${uuid}/assign`, payload)
   //   return data
   // },
 
   async updateIssueStatus(uuid: string, payload: UpdateStatusPayload): Promise<void> {
-    await axios.patch(`/api/issues/${uuid}/status`, payload)
+    await api.patch(`/api/issues/${uuid}/status`, payload)
   },
 
   async addComment(uuid: string, payload: AddCommentPayload) {
-    await axios.post(`/api/issues/${uuid}/comments`, payload)
+    await api.post(`/api/issues/${uuid}/comments`, payload)
   },
 
   async addAttachment(uuid: string, payload: AddAttachmentPayload) {
-    await axios.post(`/api/issues/${uuid}/attachments`, payload)
+    await api.post(`/api/issues/${uuid}/attachments`, payload)
   },
 
   async getBarangays(): Promise<Barangay[]> {
-    const { data } = await axios.get<Barangay[]>('/api/barangays')
+    const { data } = await api.get<Barangay[]>('/api/barangays')
     return data
   },
 
   // async assignIssue(uuid: string): Promise<Issue> {
-  //   const { data } = await axios.patch<{ data: Issue }>(`/api/issues/${uuid}/assign`)
+  //   const { data } = await api.patch<{ data: Issue }>(`/api/issues/${uuid}/assign`)
 
   //   return data.data
   // },
 
   async claimIssue(uuid: string): Promise<Issue> {
-    const { data } = await axios.patch<{ data: Issue }>(`/api/issues/${uuid}/assign`)
+    const { data } = await api.patch<{ data: Issue }>(`/api/issues/${uuid}/assign`)
     return data.data
   },
 
   async assignIssue(uuid: string, staffId: number) {
-    return await axios.patch(`/api/issues/${uuid}/assign`, {
+    return await api.patch(`/api/issues/${uuid}/assign`, {
       assigned_to: staffId,
     })
   },

@@ -6,23 +6,25 @@ import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'
-import { useAuthStore } from './stores/authStore.ts'
+import { useAuthStore } from './stores/authStore'
 import { VueQueryPlugin, QueryClient } from '@tanstack/vue-query'
 
 import Vue3Toastify, { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import { profileService } from './services/profileService.ts'
-import { staffDashboardService } from './services/staffDashboardService.ts'
 
+// Axios configuration
 axios.defaults.baseURL = import.meta.env.VITE_API_URL
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
+axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.common['Content-Type'] = 'application/json'
+
+// No cookie-based authentication
+axios.defaults.withCredentials = false
+axios.defaults.withXSRFToken = false
 
 const app = createApp(App)
 
-app.use(createPinia())
-
-const authStore = useAuthStore()
+const pinia = createPinia()
+app.use(pinia)
 
 app.use(Vue3Toastify, {
   autoClose: 3000,
@@ -31,11 +33,6 @@ app.use(Vue3Toastify, {
   pauseOnHover: true,
   closeOnClick: true,
 })
-
-await authStore.getUser()
-// await authStore.logout()
-
-// await staffDashboardService.getDashboard()
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,10 +45,19 @@ const queryClient = new QueryClient({
   },
 })
 
-app.use(VueQueryPlugin, {
-  queryClient,
-})
+app.use(VueQueryPlugin, { queryClient })
+
+const authStore = useAuthStore()
+
+const token = localStorage.getItem('access_token')
+
+if (token) {
+  try {
+    await authStore.getUser()
+  } catch {
+    localStorage.removeItem('access_token')
+  }
+}
 
 app.use(router)
-
 app.mount('#app')
