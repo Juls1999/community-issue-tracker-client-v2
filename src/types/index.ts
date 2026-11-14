@@ -34,7 +34,6 @@ export interface RegisterParams {
   barangayId: string
   password: string
   passwordConfirmation: string
-  token: string
 }
 
 export interface LoginParams {
