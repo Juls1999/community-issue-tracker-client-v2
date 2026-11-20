@@ -576,7 +576,7 @@ onBeforeUnmount(() => {
                             <div
                                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-bold text-brand">
                                 {{
-                                    (comment.user?.fullName ?? 'User')
+                                    (comment.commenter?.fullName ?? 'User')
                                         .trim()
                                         .charAt(0)
                                         .toUpperCase()
@@ -586,11 +586,11 @@ onBeforeUnmount(() => {
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                     <span class="font-semibold text-text-heading">
-                                        {{ comment.user?.fullName ?? 'User' }}
+                                        {{ comment.commenter?.fullName ?? 'User' }}
                                     </span>
 
-                                    <time class="text-xs text-text-muted" :datetime="comment.created_at">
-                                        {{ new Date(comment.created_at).toLocaleString() }}
+                                    <time class="text-xs text-text-muted" :datetime="comment.createdAt">
+                                        {{ new Date(comment.createdAt).toLocaleString() }}
                                     </time>
                                 </div>
 

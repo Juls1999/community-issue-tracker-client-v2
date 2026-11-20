@@ -25,10 +25,15 @@ export const issueDiscussionService = {
     const formData = new FormData()
 
     files.forEach((file) => {
-      formData.append('images[]', file)
+      formData.append('images[]', file, file.name)
     })
 
-    return api.post(`/api/issues/${issueUuid}/attachments`, formData)
+    return api.post(`/api/issues/${issueUuid}/attachments`, formData, {
+      transformRequest: [(data) => data],
+      headers: {
+        'Content-Type': undefined,
+      },
+    })
   },
 
   getDownloadUrl(issueUuid: string, attachmentId: number) {

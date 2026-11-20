@@ -119,9 +119,9 @@ export interface IssueStatistics {
 export interface IssueComment {
   id: number
   body: string
-  is_internal: boolean
-  created_at: string
-  user: User
+  isInternal: boolean
+  createdAt: string
+  commenter: User
 }
 
 export interface IssueAttachment {
