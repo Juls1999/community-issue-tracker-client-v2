@@ -131,6 +131,7 @@ export interface IssueAttachment {
   file_size: number
   created_at: string
   uploader?: User | null
+  file_url?: string
 }
 
 export type AssignStaffPayload = {

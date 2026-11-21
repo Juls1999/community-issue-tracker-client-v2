@@ -746,10 +746,10 @@ onBeforeUnmount(() => {
                     <li v-for="attachment in attachments" :key="attachment.id"
                         class="group overflow-hidden rounded-xl border border-border-subtle bg-bg-surface transition duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md">
                         <!-- Image preview -->
-                        <button v-if="imageUrls[attachment.file_url]" type="button"
+                        <button v-if="imageUrls[attachment.id]" type="button"
                             class="relative block w-full overflow-hidden bg-bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
-                            :aria-label="`View ${attachment.original_name}`" @click="downloadAttachment(attachment.file_url)">
-                            <img :src="imageUrls[attachment.file_url]" :alt="attachment.original_name"
+                            :aria-label="`View ${attachment.original_name}`" @click="downloadAttachment(attachment.id)">
+                            <img :src="imageUrls[attachment.file_size]" :alt="attachment.original_name"
                                 class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-90"
                                 loading="lazy" />
 
