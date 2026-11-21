@@ -17,6 +17,8 @@ import type { IssueAttachment, IssueComment } from '@/types'
 import { toast } from 'vue3-toastify'
 import { useAuthStore } from '@/stores/authStore'
 
+const authStore = useAuthStore()
+
 
 // -----------------------------------------
 // Props
@@ -842,7 +844,7 @@ onBeforeUnmount(() => {
                                 {{ (attachment.file_size / 1024).toFixed(1) }} KB
                             </p>
 
-                            <p v-if="attachment.uploader" class="truncate text-xs text-text-muted">
+                            <p v-if="attachment.uploader && authStore.user?.role?.name !== 'resident' " class="truncate text-xs text-text-muted">
                                 Uploaded by {{ attachment.uploader.fullName }}
                             </p>
 
