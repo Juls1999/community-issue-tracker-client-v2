@@ -274,18 +274,12 @@ const uploadAttachmentMutation = useMutation({
         actionError.value = ''
         toast.success('Photo/s uploaded successfully')
 
-        const newAttachments = response.data
-
         queryClient.setQueryData<IssueAttachment[]>(
             attachmentsKey.value,
-            (oldData) => {
-                if (!oldData) return newAttachments
-
-                return [
-                    ...oldData,
-                    ...newAttachments,
-                ]
-            },
+            (oldData) => [
+                ...(oldData ?? []),
+                ...response.data.data,
+            ],
         )
     },
 

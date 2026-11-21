@@ -134,6 +134,11 @@ export interface IssueAttachment {
   file_url?: string
 }
 
+export interface UploadAttachmentResponse {
+  message: string
+  data: IssueAttachment[]
+}
+
 export type AssignStaffPayload = {
   id: number
 }

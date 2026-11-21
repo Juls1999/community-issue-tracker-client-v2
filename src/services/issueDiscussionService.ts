@@ -1,5 +1,6 @@
-import type { IssueComment } from '@/types'
+import type { IssueComment, UploadAttachmentResponse } from '@/types'
 import api from './axios'
+import type { AxiosResponse } from 'axios'
 
 export const issueDiscussionService = {
   async getComments(issueUuid: string): Promise<IssueComment[]> {
@@ -20,7 +21,10 @@ export const issueDiscussionService = {
     return response.data
   },
 
-  async uploadAttachment(issueUuid: string, files: File[]) {
+  async uploadAttachment(
+    issueUuid: string,
+    files: File[],
+  ): Promise<AxiosResponse<UploadAttachmentResponse>> {
     const formData = new FormData()
 
     files.forEach((file) => {
@@ -49,5 +53,4 @@ export const issueDiscussionService = {
 
     return response.data
   },
-
 }
