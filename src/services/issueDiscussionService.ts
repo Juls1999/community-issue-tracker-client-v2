@@ -40,6 +40,17 @@ export const issueDiscussionService = {
     return `/api/issues/${issueUuid}/attachments/${attachmentId}/download`
   },
 
+  async downloadAttachment(issueUuid: string, attachmentId: number) {
+    const response = await api.get(
+      `/api/issues/${issueUuid}/attachments/${attachmentId}/download`,
+      {
+        responseType: 'blob',
+      },
+    )
+
+    return response.data
+  },
+
   // getDownloadUrl(issueUuid: string, attachmentId: number) {
   //   return (
   //     `${axios.defaults.baseURL ?? ''}` +

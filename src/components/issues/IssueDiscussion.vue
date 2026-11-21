@@ -314,19 +314,22 @@ const imageBlobsQuery = useQuery({
     ]),
 
     queryFn: async () => {
-        const results = await Promise.all(
+        return Promise.all(
             attachments.value.map(async attachment => {
                 try {
-                    const url = issueDiscussionService.getDownloadUrl(
-                        props.issueUuid,
-                        attachment.id,
-                    )
+                    const blob =
+                        await issueDiscussionService.downloadAttachment(
+                            props.issueUuid,
+                            attachment.id,
+                        )
 
-                    const response = await axios.get(url, {
-                        responseType: 'blob',
-                    })
+                    if (!blob.type.startsWith('image/')) {
+                        console.error(
+                            'Invalid image response:',
+                            attachment.original_name,
+                            blob.type,
+                        )
 
-                    if (!response.data.type.startsWith('image/')) {
                         return {
                             id: attachment.id,
                             blob: null,
@@ -335,9 +338,15 @@ const imageBlobsQuery = useQuery({
 
                     return {
                         id: attachment.id,
-                        blob: response.data as Blob,
+                        blob,
                     }
-                } catch {
+                } catch (error) {
+                    console.error(
+                        'Failed to load attachment:',
+                        attachment.id,
+                        error,
+                    )
+
                     return {
                         id: attachment.id,
                         blob: null,
@@ -345,8 +354,6 @@ const imageBlobsQuery = useQuery({
                 }
             })
         )
-
-        return results
     },
 
     enabled: computed(() =>
@@ -403,21 +410,19 @@ const downloadAttachment = async (attachmentId: number) => {
     actionError.value = ''
 
     try {
-        const url = issueDiscussionService.getDownloadUrl(
-            props.issueUuid,
-            attachmentId,
-        )
+        const blob =
+            await issueDiscussionService.downloadAttachment(
+                props.issueUuid,
+                attachmentId,
+            )
 
-        const response = await axios.get(url, {
-            responseType: 'blob',
-        })
-
-        const objectUrl = URL.createObjectURL(response.data)
-        const link = document.createElement('a')
+        const objectUrl = URL.createObjectURL(blob)
 
         const attachment = attachments.value.find(
             item => item.id === attachmentId
         )
+
+        const link = document.createElement('a')
 
         link.href = objectUrl
         link.download = attachment?.original_name ?? 'attachment'
@@ -426,11 +431,10 @@ const downloadAttachment = async (attachmentId: number) => {
         link.click()
         link.remove()
 
-        window.setTimeout(() => {
-            URL.revokeObjectURL(objectUrl)
-        }, 1000)
+        URL.revokeObjectURL(objectUrl)
 
     } catch (error: unknown) {
+        console.error('Download failed:', error)
         actionError.value = getErrorMessage(error)
     }
 }
@@ -749,7 +753,7 @@ onBeforeUnmount(() => {
                         <button v-if="imageUrls[attachment.id]" type="button"
                             class="relative block w-full overflow-hidden bg-bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
                             :aria-label="`View ${attachment.original_name}`" @click="downloadAttachment(attachment.id)">
-                            <img :src="imageUrls[attachment.file_size]" :alt="attachment.original_name"
+                            <img :src="imageUrls[attachment.id]" :alt="attachment.original_name"
                                 class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-90"
                                 loading="lazy" />
 
