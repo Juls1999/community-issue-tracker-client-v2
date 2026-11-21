@@ -792,7 +792,7 @@ onBeforeUnmount(() => {
                         class="group overflow-hidden rounded-xl border border-border-subtle bg-bg-surface transition duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md">
                         <!-- Image preview -->
                         <button v-if="imageUrls[attachment.id]" type="button"
-                            class="relative block w-full overflow-hidden bg-bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+                            class="relative block cursor-zoom-in w-full overflow-hidden bg-bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
                             :aria-label="`Preview ${attachment.original_name}`" @click="openImagePreview(attachment)">
                             <img :src="imageUrls[attachment.id]" :alt="attachment.original_name"
                                 class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-90"
@@ -847,7 +847,7 @@ onBeforeUnmount(() => {
                             </p>
 
                             <button type="button"
-                                class="inline-flex items-center gap-1.5 pt-1 text-xs font-semibold text-brand transition hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                                class="inline-flex cursor-pointer items-center gap-1.5 pt-1 text-xs font-semibold text-brand transition hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                                 @click="downloadAttachment(attachment.id)">
                                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -856,7 +856,7 @@ onBeforeUnmount(() => {
                                     <path d="m7 10 5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
 
-                                Download original
+                                Download
                             </button>
                         </div>
                     </li>
@@ -899,7 +899,7 @@ onBeforeUnmount(() => {
                                 <!-- Modal footer -->
                                 <div class="flex justify-end border-t border-border-subtle px-4 py-3">
                                     <button type="button"
-                                        class="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                                        class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                                         @click="downloadAttachment(selectedImage.id)">
                                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2">
@@ -909,7 +909,7 @@ onBeforeUnmount(() => {
                                                 stroke-linejoin="round" />
                                         </svg>
 
-                                        Download original
+                                        Download
                                     </button>
                                 </div>
                             </div>
