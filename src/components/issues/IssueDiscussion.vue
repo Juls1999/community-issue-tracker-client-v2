@@ -332,24 +332,22 @@ const imageBlobsQuery = useQuery({
         return Promise.all(
             attachments.value.map(async attachment => {
                 try {
-                    const blob =
-                        await issueDiscussionService.downloadAttachment(
+                    const blob = await queryClient.fetchQuery({
+                        queryKey: [
+                            'issueDiscussion',
+                            'attachmentImage',
                             props.issueUuid,
                             attachment.id,
-                        )
+                        ],
 
-                    if (!blob.type.startsWith('image/')) {
-                        console.error(
-                            'Invalid image response:',
-                            attachment.original_name,
-                            blob.type,
-                        )
+                        queryFn: () =>
+                            issueDiscussionService.downloadAttachment(
+                                props.issueUuid,
+                                attachment.id,
+                            ),
 
-                        return {
-                            id: attachment.id,
-                            blob: null,
-                        }
-                    }
+                        staleTime: Infinity,
+                    })
 
                     return {
                         id: attachment.id,
@@ -375,7 +373,7 @@ const imageBlobsQuery = useQuery({
         !!props.issueUuid && attachments.value.length > 0
     ),
 
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
 })
 
 // -----------------------------------------
