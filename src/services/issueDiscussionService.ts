@@ -1,6 +1,5 @@
 import type { IssueComment } from '@/types'
 import api from './axios'
-import axios from 'axios'
 
 export const issueDiscussionService = {
   async getComments(issueUuid: string): Promise<IssueComment[]> {
@@ -51,10 +50,4 @@ export const issueDiscussionService = {
     return response.data
   },
 
-  // getDownloadUrl(issueUuid: string, attachmentId: number) {
-  //   return (
-  //     `${axios.defaults.baseURL ?? ''}` +
-  //     `/api/issues/${issueUuid}/attachments/${attachmentId}/download`
-  //   )
-  // },
 }

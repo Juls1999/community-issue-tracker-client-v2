@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import {
     useQuery,
@@ -15,6 +15,8 @@ import { issueDiscussionKeys } from '@/queries/issueDiscussionKeys'
 import type { IssueAttachment, IssueComment } from '@/types'
 
 import { toast } from 'vue3-toastify'
+import { useAuthStore } from '@/stores/authStore'
+
 
 // -----------------------------------------
 // Props
@@ -452,10 +454,49 @@ const refreshDiscussion = async () => {
 
 
 // -----------------------------------------
-// Cleanup
+// Image preview modal
 // -----------------------------------------
 
+const selectedImage = ref<{
+    id: number
+    url: string
+    name: string
+} | null>(null)
+
+const openImagePreview = (attachment: IssueAttachment) => {
+    const url = imageUrls.value[attachment.id]
+
+    if (!url) return
+
+    selectedImage.value = {
+        id: attachment.id,
+        url,
+        name: attachment.original_name,
+    }
+}
+
+const closeImagePreview = () => {
+    selectedImage.value = null
+}
+
+const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+        closeImagePreview()
+    }
+}
+
+
+
+
+// -----------------------------------------
+// Cleanup
+// -----------------------------------------
+onMounted(() => {
+    window.addEventListener('keydown', handleEscape)
+})
+
 onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleEscape)
     clearImageUrls()
 })
 </script>
@@ -752,14 +793,14 @@ onBeforeUnmount(() => {
                         <!-- Image preview -->
                         <button v-if="imageUrls[attachment.id]" type="button"
                             class="relative block w-full overflow-hidden bg-bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
-                            :aria-label="`View ${attachment.original_name}`" @click="downloadAttachment(attachment.id)">
+                            :aria-label="`Preview ${attachment.original_name}`" @click="openImagePreview(attachment)">
                             <img :src="imageUrls[attachment.id]" :alt="attachment.original_name"
                                 class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-90"
                                 loading="lazy" />
 
                             <span
                                 class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-8 text-left text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-                                Download image
+                                Click to preview
                             </span>
                         </button>
 
@@ -820,6 +861,61 @@ onBeforeUnmount(() => {
                         </div>
                     </li>
                 </ul>
+
+                <Teleport to="body">
+                    <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0"
+                        enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="opacity-100" leave-to-class="opacity-0">
+                        <div v-if="selectedImage"
+                            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+                            @click.self="closeImagePreview" @keydown.esc="closeImagePreview">
+                            <div class="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-bg-surface shadow-2xl"
+                                role="dialog" aria-modal="true" aria-label="Image preview">
+                                <!-- Modal header -->
+                                <div
+                                    class="flex items-center justify-between gap-4 border-b border-border-subtle px-4 py-3">
+                                    <p class="truncate text-sm font-semibold text-text-heading"
+                                        :title="selectedImage.name">
+                                        {{ selectedImage.name }}
+                                    </p>
+
+                                    <button type="button"
+                                        class="shrink-0 rounded-lg p-2 text-text-muted transition hover:bg-bg-page hover:text-text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                                        aria-label="Close preview" @click="closeImagePreview">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <path d="M18 6 6 18M6 6l12 12" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Image -->
+                                <div
+                                    class="flex min-h-0 flex-1 items-center justify-center overflow-auto bg-black/90 p-3">
+                                    <img :src="selectedImage.url" :alt="selectedImage.name"
+                                        class="max-h-[75vh] max-w-full rounded-md object-contain" />
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="flex justify-end border-t border-border-subtle px-4 py-3">
+                                    <button type="button"
+                                        class="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                                        @click="downloadAttachment(selectedImage.id)">
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="m7 10 5 5 5-5M12 15V3" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+
+                                        Download original
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </Transition>
+                </Teleport>
             </div>
         </div>
     </section>
