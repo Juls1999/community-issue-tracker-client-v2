@@ -392,17 +392,18 @@ const clearImageUrls = () => {
 watch(
     () => imageBlobsQuery.data.value,
     results => {
-        clearImageUrls()
-
         if (!results) return
 
-        const urls: Record<number, string> = {}
-        const failures: number[] = []
+        const urls = { ...imageUrls.value }
+        const failures = [...failedImages.value]
 
         results.forEach(result => {
+            // Skip images that already have an object URL
+            if (urls[result.id]) return
+
             if (result.blob) {
                 urls[result.id] = URL.createObjectURL(result.blob)
-            } else {
+            } else if (!failures.includes(result.id)) {
                 failures.push(result.id)
             }
         })
