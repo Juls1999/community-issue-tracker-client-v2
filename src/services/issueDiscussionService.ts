@@ -37,9 +37,13 @@ export const issueDiscussionService = {
   },
 
   getDownloadUrl(issueUuid: string, attachmentId: number) {
-    return (
-      `${axios.defaults.baseURL ?? ''}` +
-      `/api/issues/${issueUuid}/attachments/${attachmentId}/download`
-    )
+    return `/api/issues/${issueUuid}/attachments/${attachmentId}/download`
   },
+
+  // getDownloadUrl(issueUuid: string, attachmentId: number) {
+  //   return (
+  //     `${axios.defaults.baseURL ?? ''}` +
+  //     `/api/issues/${issueUuid}/attachments/${attachmentId}/download`
+  //   )
+  // },
 }
