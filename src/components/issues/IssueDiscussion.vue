@@ -262,7 +262,7 @@ const uploadAttachmentMutation = useMutation({
             files,
         ),
 
-    onSuccess: async () => {
+    onSuccess: async (response) => {
         selectedImages.value = []
 
         const input = document.getElementById(
@@ -274,9 +274,19 @@ const uploadAttachmentMutation = useMutation({
         actionError.value = ''
         toast.success('Photo/s uploaded successfully')
 
-        await queryClient.invalidateQueries({
-            queryKey: attachmentsKey.value,
-        })
+        const newAttachments = response.data
+
+        queryClient.setQueryData<IssueAttachment[]>(
+            attachmentsKey.value,
+            (oldData) => {
+                if (!oldData) return newAttachments
+
+                return [
+                    ...oldData,
+                    ...newAttachments,
+                ]
+            },
+        )
     },
 
     onError: (error: unknown) => {
@@ -844,7 +854,8 @@ onBeforeUnmount(() => {
                                 {{ (attachment.file_size / 1024).toFixed(1) }} KB
                             </p>
 
-                            <p v-if="attachment.uploader && authStore.user?.role?.name !== 'resident' " class="truncate text-xs text-text-muted">
+                            <p v-if="attachment.uploader && authStore.user?.role?.name !== 'resident'"
+                                class="truncate text-xs text-text-muted">
                                 Uploaded by {{ attachment.uploader.fullName }}
                             </p>
 
