@@ -12,7 +12,7 @@ import {
 } from '@/services/issueDiscussionService'
 
 import { issueDiscussionKeys } from '@/queries/issueDiscussionKeys'
-import type { IssueAttachment, IssueComment } from '@/types'
+import type { IssueAttachment, IssueComment, UploadAttachmentResponse } from '@/types'
 
 import { toast } from 'vue3-toastify'
 import { useAuthStore } from '@/stores/authStore'
@@ -89,7 +89,7 @@ const {
     isError: attachmentsError,
     error: attachmentsQueryError,
     refetch: refetchAttachments,
-} = useQuery({
+} = useQuery<UploadAttachmentResponse>({
     queryKey: attachmentsKey,
 
     queryFn: () =>
@@ -274,12 +274,19 @@ const uploadAttachmentMutation = useMutation({
         actionError.value = ''
         toast.success('Photo/s uploaded successfully')
 
-        queryClient.setQueryData<IssueAttachment[]>(
+        queryClient.setQueryData<UploadAttachmentResponse>(
             attachmentsKey.value,
-            (oldData) => [
-                ...(oldData ?? []),
-                ...response.data.data,
-            ],
+            (oldData) => {
+                if (!oldData) return oldData
+
+                return {
+                    ...oldData,
+                    data: [
+                        ...oldData.data,
+                        ...response.data.data,
+                    ],
+                }
+            },
         )
     },
 
